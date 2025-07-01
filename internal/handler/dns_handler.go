@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"dns-update/internal/service"
 
@@ -147,8 +148,9 @@ func (h *DNSHandler) SearchDomainRecords(c *gin.Context) {
 // @Produce      json
 // @Param        domain      path      string  true   "域名"
 // @Param        record_id   path      string  true   "解析记录ID"
-// @Success      200    {array}   service.DomainRecord
+// @Success      200    {object}   service.DomainRecord
 // @Failure      400    {object}  string
+// @Failure      404    {object}  string
 // @Failure      500    {object}  string
 // @Router       /domains/{domain}/records/id/{record_id} [get]
 func (h *DNSHandler) SearchDomainRecordsByRecordId(c *gin.Context) {
@@ -160,18 +162,24 @@ func (h *DNSHandler) SearchDomainRecordsByRecordId(c *gin.Context) {
 		return
 	}
 
-	opts := service.SearchDomainRecordsOptions{
-		DomainName: domain,
-		RecordId:   recordId,
-	}
-
-	records, err := h.dnsService.SearchDomainRecords(&opts)
+	record, err := h.dnsService.GetDomainRecordById(recordId)
 	if err != nil {
+		if strings.Contains(err.Error(), "DomainRecordNotFound") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "解析记录不存在"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, records)
+	// 验证记录是否属于指定域名
+	recordDomain := record.RR + "." + domain
+	if !strings.HasSuffix(recordDomain, domain) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "解析记录不属于指定域名"})
+		return
+	}
+
+	c.JSON(http.StatusOK, record)
 }
 
 // SearchDomainRecordsByRR godoc
@@ -221,8 +229,9 @@ func (h *DNSHandler) SearchDomainRecordsByRR(c *gin.Context) {
 // @Tags         records
 // @Accept       json
 // @Produce      json
-// @Param        domain   path      string  true   "域名"
-// @Param        type     path      string  true   "记录类型"
+// @Param        domain     path      string  true   "域名"
+// @Param        type       path      string  true   "记录类型"
+// @Param        page_size  query     integer false  "每页记录数，默认20"  minimum(1)  maximum(500)
 // @Success      200    {array}   service.DomainRecord
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
@@ -236,12 +245,22 @@ func (h *DNSHandler) SearchDomainRecordsByType(c *gin.Context) {
 		return
 	}
 
-	opts := service.SearchDomainRecordsOptions{
-		DomainName: domain,
-		Type:       recordType,
+	// 解析page_size参数
+	var pageSize int64 = 0
+	if pageSizeStr := c.Query("page_size"); pageSizeStr != "" {
+		var err error
+		pageSize, err = strconv.ParseInt(pageSizeStr, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须是有效的整数"})
+			return
+		}
+		if pageSize < 1 || pageSize > 500 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须在1-500之间"})
+			return
+		}
 	}
 
-	records, err := h.dnsService.SearchDomainRecords(&opts)
+	records, err := h.dnsService.GetDomainRecordsByType(domain, recordType, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -252,12 +271,13 @@ func (h *DNSHandler) SearchDomainRecordsByType(c *gin.Context) {
 
 // SearchDomainRecordsByStatus godoc
 // @Summary      根据状态查询解析记录
-// @Description  根据状态查询域名解析记录
+// @Description  查询指定域名下所有特定状态的解析记录
 // @Tags         records
 // @Accept       json
 // @Produce      json
-// @Param        domain   path      string  true   "域名"
-// @Param        status   path      string  true   "状态(Enable/Disable)"
+// @Param        domain     path      string  true   "域名"
+// @Param        status     path      string  true   "状态(Enable/Disable)"
+// @Param        page_size  query     integer false  "每页记录数，默认20"  minimum(1)  maximum(500)
 // @Success      200    {array}   service.DomainRecord
 // @Failure      400    {object}  string
 // @Failure      500    {object}  string
@@ -276,12 +296,22 @@ func (h *DNSHandler) SearchDomainRecordsByStatus(c *gin.Context) {
 		return
 	}
 
-	opts := service.SearchDomainRecordsOptions{
-		DomainName: domain,
-		Status:     status,
+	// 解析page_size参数
+	var pageSize int64 = 0
+	if pageSizeStr := c.Query("page_size"); pageSizeStr != "" {
+		var err error
+		pageSize, err = strconv.ParseInt(pageSizeStr, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须是有效的整数"})
+			return
+		}
+		if pageSize < 1 || pageSize > 500 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须在1-500之间"})
+			return
+		}
 	}
 
-	records, err := h.dnsService.SearchDomainRecords(&opts)
+	records, err := h.dnsService.GetDomainRecordsByStatus(domain, status, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

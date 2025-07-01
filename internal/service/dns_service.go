@@ -258,3 +258,195 @@ func (s *DNSService) SearchDomainRecords(opts *SearchDomainRecordsOptions) ([]Do
 	s.log.Info("未指定子域名，返回空记录列表")
 	return []DomainRecord{}, nil
 }
+
+// GetDomainRecordById 根据记录ID查询解析记录
+func (s *DNSService) GetDomainRecordById(recordId string) (*DomainRecord, error) {
+	s.log.Info("正在查询解析记录",
+		zap.String("record_id", recordId),
+	)
+
+	req := &dns.DescribeDomainRecordInfoRequest{
+		RecordId: tea.String(recordId),
+	}
+
+	resp, err := s.client.DescribeDomainRecordInfo(req)
+	if err != nil {
+		s.log.Error("查询解析记录失败",
+			zap.String("record_id", recordId),
+			zap.Error(err),
+		)
+		return nil, err
+	}
+
+	record := &DomainRecord{
+		RecordId: tea.StringValue(resp.Body.RecordId),
+		RR:       tea.StringValue(resp.Body.RR),
+		Type:     tea.StringValue(resp.Body.Type),
+		Value:    tea.StringValue(resp.Body.Value),
+		Status:   tea.StringValue(resp.Body.Status),
+		Locked:   tea.BoolValue(resp.Body.Locked),
+		Line:     tea.StringValue(resp.Body.Line),
+		Priority: tea.Int64Value(resp.Body.Priority),
+		TTL:      tea.Int64Value(resp.Body.TTL),
+	}
+
+	s.log.Info("查询解析记录成功",
+		zap.String("record_id", recordId),
+		zap.String("rr", record.RR),
+		zap.String("type", record.Type),
+	)
+
+	return record, nil
+}
+
+// GetDomainRecordsByStatus 获取指定域名下特定状态的所有解析记录
+func (s *DNSService) GetDomainRecordsByStatus(domainName, status string, pageSize int64) ([]DomainRecord, error) {
+	if pageSize == 0 {
+		pageSize = DefaultSearchDomainRecordsOptions.PageSize
+	}
+
+	s.log.Info("正在获取域名解析记录",
+		zap.String("domain", domainName),
+		zap.String("status", status),
+		zap.Int64("page_size", pageSize),
+	)
+
+	var allRecords []DomainRecord
+	pageNumber := int64(1)
+
+	for {
+		req := &dns.DescribeDomainRecordsRequest{
+			DomainName: tea.String(domainName),
+			PageSize:   tea.Int64(pageSize),
+			PageNumber: tea.Int64(pageNumber),
+			Status:     tea.String(status),
+		}
+
+		resp, err := s.client.DescribeDomainRecords(req)
+		if err != nil {
+			s.log.Error("获取域名解析记录失败",
+				zap.String("domain", domainName),
+				zap.String("status", status),
+				zap.Int64("page", pageNumber),
+				zap.Error(err),
+			)
+			return nil, err
+		}
+
+		// 处理当前页的记录
+		for _, r := range resp.Body.DomainRecords.Record {
+			allRecords = append(allRecords, DomainRecord{
+				RecordId: tea.StringValue(r.RecordId),
+				RR:       tea.StringValue(r.RR),
+				Type:     tea.StringValue(r.Type),
+				Value:    tea.StringValue(r.Value),
+				Status:   tea.StringValue(r.Status),
+				Locked:   tea.BoolValue(r.Locked),
+				Line:     tea.StringValue(r.Line),
+				Priority: tea.Int64Value(r.Priority),
+				TTL:      tea.Int64Value(r.TTL),
+			})
+		}
+
+		// 检查是否还有下一页
+		totalCount := tea.Int64Value(resp.Body.TotalCount)
+		totalPages := (totalCount + pageSize - 1) / pageSize
+
+		s.log.Debug("获取域名解析记录分页信息",
+			zap.String("domain", domainName),
+			zap.String("status", status),
+			zap.Int64("current_page", pageNumber),
+			zap.Int64("total_pages", totalPages),
+			zap.Int("current_records", len(allRecords)),
+			zap.Int64("total_records", totalCount),
+		)
+
+		if pageNumber >= totalPages {
+			break
+		}
+		pageNumber++
+	}
+
+	s.log.Info("获取域名解析记录成功",
+		zap.String("domain", domainName),
+		zap.String("status", status),
+		zap.Int("count", len(allRecords)),
+	)
+	return allRecords, nil
+}
+
+// GetDomainRecordsByType 获取指定域名下特定类型的所有解析记录
+func (s *DNSService) GetDomainRecordsByType(domainName, recordType string, pageSize int64) ([]DomainRecord, error) {
+	if pageSize == 0 {
+		pageSize = DefaultSearchDomainRecordsOptions.PageSize
+	}
+
+	s.log.Info("正在获取域名解析记录",
+		zap.String("domain", domainName),
+		zap.String("type", recordType),
+		zap.Int64("page_size", pageSize),
+	)
+
+	var allRecords []DomainRecord
+	pageNumber := int64(1)
+
+	for {
+		req := &dns.DescribeDomainRecordsRequest{
+			DomainName: tea.String(domainName),
+			PageSize:   tea.Int64(pageSize),
+			PageNumber: tea.Int64(pageNumber),
+			Type:       tea.String(recordType),
+		}
+
+		resp, err := s.client.DescribeDomainRecords(req)
+		if err != nil {
+			s.log.Error("获取域名解析记录失败",
+				zap.String("domain", domainName),
+				zap.String("type", recordType),
+				zap.Int64("page", pageNumber),
+				zap.Error(err),
+			)
+			return nil, err
+		}
+
+		// 处理当前页的记录
+		for _, r := range resp.Body.DomainRecords.Record {
+			allRecords = append(allRecords, DomainRecord{
+				RecordId: tea.StringValue(r.RecordId),
+				RR:       tea.StringValue(r.RR),
+				Type:     tea.StringValue(r.Type),
+				Value:    tea.StringValue(r.Value),
+				Status:   tea.StringValue(r.Status),
+				Locked:   tea.BoolValue(r.Locked),
+				Line:     tea.StringValue(r.Line),
+				Priority: tea.Int64Value(r.Priority),
+				TTL:      tea.Int64Value(r.TTL),
+			})
+		}
+
+		// 检查是否还有下一页
+		totalCount := tea.Int64Value(resp.Body.TotalCount)
+		totalPages := (totalCount + pageSize - 1) / pageSize
+
+		s.log.Debug("获取域名解析记录分页信息",
+			zap.String("domain", domainName),
+			zap.String("type", recordType),
+			zap.Int64("current_page", pageNumber),
+			zap.Int64("total_pages", totalPages),
+			zap.Int("current_records", len(allRecords)),
+			zap.Int64("total_records", totalCount),
+		)
+
+		if pageNumber >= totalPages {
+			break
+		}
+		pageNumber++
+	}
+
+	s.log.Info("获取域名解析记录成功",
+		zap.String("domain", domainName),
+		zap.String("type", recordType),
+		zap.Int("count", len(allRecords)),
+	)
+	return allRecords, nil
+}

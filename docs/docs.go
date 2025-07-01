@@ -129,14 +129,17 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
+                            "$ref": "#/definitions/service.DomainRecord"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "string"
                         }
@@ -285,7 +288,7 @@ const docTemplate = `{
         },
         "/domains/{domain}/records/status/{status}": {
             "get": {
-                "description": "根据状态查询域名解析记录",
+                "description": "查询指定域名下所有特定状态的解析记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -310,6 +313,14 @@ const docTemplate = `{
                         "name": "status",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "maximum": 500,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "每页记录数，默认20",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -364,6 +375,14 @@ const docTemplate = `{
                         "name": "type",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "maximum": 500,
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "每页记录数，默认20",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {

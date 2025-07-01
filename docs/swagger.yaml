@@ -114,11 +114,13 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/service.DomainRecord'
-            type: array
+            $ref: '#/definitions/service.DomainRecord'
         "400":
           description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
           schema:
             type: string
         "500":
@@ -221,7 +223,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 根据状态查询域名解析记录
+      description: 查询指定域名下所有特定状态的解析记录
       parameters:
       - description: 域名
         in: path
@@ -233,6 +235,12 @@ paths:
         name: status
         required: true
         type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
@@ -269,6 +277,12 @@ paths:
         name: type
         required: true
         type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
