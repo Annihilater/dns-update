@@ -114,6 +114,11 @@ func (s *DNSService) ListDomainRecords(domainName string, opts *ListDomainRecord
 		opts = &DefaultListDomainRecordsOptions
 	}
 
+	// 确保PageSize有默认值
+	if opts.PageSize == 0 {
+		opts.PageSize = DefaultListDomainRecordsOptions.PageSize
+	}
+
 	s.log.Info("正在获取域名解析记录",
 		zap.String("domain", domainName),
 		zap.Int64("page_size", opts.PageSize),
@@ -184,6 +189,11 @@ func (s *DNSService) ListDomainRecords(domainName string, opts *ListDomainRecord
 func (s *DNSService) SearchDomainRecords(opts *SearchDomainRecordsOptions) ([]DomainRecord, error) {
 	if opts == nil {
 		opts = &DefaultSearchDomainRecordsOptions
+	}
+
+	// 确保PageSize有默认值
+	if opts.PageSize == 0 {
+		opts.PageSize = DefaultSearchDomainRecordsOptions.PageSize
 	}
 
 	s.log.Info("正在查询域名解析记录",

@@ -1,439 +1,439 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "阿里云DNS管理服务API",
-        "title": "DNS Update API",
-        "contact": {},
-        "version": "1.0"
-    },
-    "basePath": "/api",
-    "paths": {
-        "/domains": {
-            "get": {
-                "description": "获取账户下所有的域名列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "domains"
-                ],
-                "summary": "获取域名列表",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.Domain"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
+  "swagger": "2.0",
+  "info": {
+    "description": "阿里云DNS管理服务API",
+    "title": "DNS Update API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "basePath": "/api",
+  "paths": {
+    "/domains": {
+      "get": {
+        "description": "获取账户下所有的域名列表",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "domains"
+        ],
+        "summary": "获取域名列表",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.Domain"
+              }
             }
-        },
-        "/domains/{domain}/records": {
-            "get": {
-                "description": "获取指定域名的所有解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "获取域名解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "maximum": 500,
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "每页记录数，默认20",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
-        },
-        "/domains/{domain}/records/id/{record_id}": {
-            "get": {
-                "description": "根据记录ID查询域名解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "根据记录ID查询解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "解析记录ID",
-                        "name": "record_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/domains/{domain}/records/rr/{rr}": {
-            "get": {
-                "description": "根据主机记录查询域名解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "根据主机记录查询解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "主机记录",
-                        "name": "rr",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/domains/{domain}/records/search": {
-            "get": {
-                "description": "根据条件搜索域名解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "搜索域名解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "解析记录ID",
-                        "name": "record_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "主机记录",
-                        "name": "rr",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "记录类型",
-                        "name": "type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "状态(Enable/Disable)",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 500,
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "每页记录数，默认20",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/domains/{domain}/records/status/{status}": {
-            "get": {
-                "description": "根据状态查询域名解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "根据状态查询解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "状态(Enable/Disable)",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/domains/{domain}/records/type/{type}": {
-            "get": {
-                "description": "根据记录类型查询域名解析记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "records"
-                ],
-                "summary": "根据记录类型查询解析记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "域名",
-                        "name": "domain",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "记录类型",
-                        "name": "type",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/service.DomainRecord"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
+          }
         }
+      }
     },
-    "definitions": {
-        "service.Domain": {
-            "type": "object",
-            "properties": {
-                "ali_domain": {
-                    "type": "boolean"
-                },
-                "domain_id": {
-                    "type": "string"
-                },
-                "domain_name": {
-                    "type": "string"
-                },
-                "puny_code": {
-                    "type": "string"
-                }
+    "/domains/{domain}/records": {
+      "get": {
+        "description": "获取指定域名的所有解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "获取域名解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer",
+            "description": "每页记录数，默认20",
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
             }
-        },
-        "service.DomainRecord": {
-            "type": "object",
-            "properties": {
-                "line": {
-                    "type": "string"
-                },
-                "locked": {
-                    "type": "boolean"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "record_id": {
-                    "type": "string"
-                },
-                "rr": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "ttl": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
+          }
         }
+      }
+    },
+    "/domains/{domain}/records/id/{record_id}": {
+      "get": {
+        "description": "根据记录ID查询域名解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "根据记录ID查询解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "解析记录ID",
+            "name": "record_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domain}/records/rr/{rr}": {
+      "get": {
+        "description": "根据主机记录查询域名解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "根据主机记录查询解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "主机记录",
+            "name": "rr",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domain}/records/search": {
+      "get": {
+        "description": "根据条件搜索域名解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "搜索域名解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "解析记录ID",
+            "name": "record_id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "主机记录",
+            "name": "rr",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "记录类型",
+            "name": "type",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "状态(Enable/Disable)",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer",
+            "description": "每页记录数，默认20",
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domain}/records/status/{status}": {
+      "get": {
+        "description": "根据状态查询域名解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "根据状态查询解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "状态(Enable/Disable)",
+            "name": "status",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domain}/records/type/{type}": {
+      "get": {
+        "description": "根据记录类型查询域名解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "根据记录类型查询解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "记录类型",
+            "name": "type",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "service.Domain": {
+      "type": "object",
+      "properties": {
+        "ali_domain": {
+          "type": "boolean"
+        },
+        "domain_id": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "puny_code": {
+          "type": "string"
+        }
+      }
+    },
+    "service.DomainRecord": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "rr": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ttl": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
