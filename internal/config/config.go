@@ -30,10 +30,10 @@ type AliyunConfig struct {
 // validateConfig 验证配置参数
 func validateConfig(config *Config) error {
 	// 检查阿里云AccessKey配置
-	if config.Aliyun.AccessKeyId == "" {
+	if config.Aliyun.AccessKeyId == "" || config.Aliyun.AccessKeyId == "${ACCESS_KEY_ID}" {
 		return fmt.Errorf("阿里云AccessKeyId未配置")
 	}
-	if config.Aliyun.AccessKeySecret == "" {
+	if config.Aliyun.AccessKeySecret == "" || config.Aliyun.AccessKeySecret == "${ACCESS_KEY_SECRET}" {
 		return fmt.Errorf("阿里云AccessKeySecret未配置")
 	}
 
