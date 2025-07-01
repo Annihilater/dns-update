@@ -33,7 +33,7 @@ definitions:
         type: string
     type: object
 info:
-  contact: { }
+  contact: {}
   description: 阿里云DNS管理服务API
   title: DNS Update API
   version: "1.0"
@@ -41,10 +41,10 @@ paths:
   /domains:
     get:
       consumes:
-        - application/json
+      - application/json
       description: 获取账户下所有的域名列表
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -58,26 +58,26 @@ paths:
             type: string
       summary: 获取域名列表
       tags:
-        - domains
+      - domain-management
   /domains/{domain}/records:
     get:
       consumes:
-        - application/json
+      - application/json
       description: 获取指定域名的所有解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 每页记录数，默认20
-          in: query
-          maximum: 500
-          minimum: 1
-          name: page_size
-          type: integer
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -91,25 +91,25 @@ paths:
             type: string
       summary: 获取域名解析记录
       tags:
-        - records
+      - record-management
   /domains/{domain}/records/id/{record_id}:
     get:
       consumes:
-        - application/json
-      description: 根据记录ID查询域名解析记录
+      - application/json
+      description: 根据记录ID查询单个域名解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 解析记录ID
-          in: path
-          name: record_id
-          required: true
-          type: string
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 解析记录ID
+        in: path
+        name: record_id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -127,27 +127,27 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: 根据记录ID查询解析记录
+      summary: 按记录ID查询解析记录
       tags:
-        - records
+      - record-query
   /domains/{domain}/records/rr/{rr}:
     get:
       consumes:
-        - application/json
+      - application/json
       description: 根据主机记录查询域名解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 主机记录
-          in: path
-          name: rr
-          required: true
-          type: string
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 主机记录
+        in: path
+        name: rr
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -163,44 +163,44 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: 根据主机记录查询解析记录
+      summary: 按主机记录查询解析记录
       tags:
-        - records
+      - record-query
   /domains/{domain}/records/search:
     get:
       consumes:
-        - application/json
-      description: 根据条件搜索域名解析记录
+      - application/json
+      description: 根据多个条件搜索域名解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 解析记录ID
-          in: query
-          name: record_id
-          type: string
-        - description: 主机记录
-          in: query
-          name: rr
-          type: string
-        - description: 记录类型
-          in: query
-          name: type
-          type: string
-        - description: 状态(Enable/Disable)
-          in: query
-          name: status
-          type: string
-        - description: 每页记录数，默认20
-          in: query
-          maximum: 500
-          minimum: 1
-          name: page_size
-          type: integer
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 解析记录ID
+        in: query
+        name: record_id
+        type: string
+      - description: 主机记录
+        in: query
+        name: rr
+        type: string
+      - description: 记录类型
+        in: query
+        name: type
+        type: string
+      - description: 状态(Enable/Disable)
+        in: query
+        name: status
+        type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -218,31 +218,31 @@ paths:
             type: string
       summary: 搜索域名解析记录
       tags:
-        - records
+      - record-query
   /domains/{domain}/records/status/{status}:
     get:
       consumes:
-        - application/json
+      - application/json
       description: 查询指定域名下所有特定状态的解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 状态(Enable/Disable)
-          in: path
-          name: status
-          required: true
-          type: string
-        - description: 每页记录数，默认20
-          in: query
-          maximum: 500
-          minimum: 1
-          name: page_size
-          type: integer
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 状态(Enable/Disable)
+        in: path
+        name: status
+        required: true
+        type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -258,33 +258,33 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: 根据状态查询解析记录
+      summary: 按记录状态查询解析记录
       tags:
-        - records
+      - record-query
   /domains/{domain}/records/type/{type}:
     get:
       consumes:
-        - application/json
+      - application/json
       description: 根据记录类型查询域名解析记录
       parameters:
-        - description: 域名
-          in: path
-          name: domain
-          required: true
-          type: string
-        - description: 记录类型
-          in: path
-          name: type
-          required: true
-          type: string
-        - description: 每页记录数，默认20
-          in: query
-          maximum: 500
-          minimum: 1
-          name: page_size
-          type: integer
+      - description: 域名
+        in: path
+        name: domain
+        required: true
+        type: string
+      - description: 记录类型
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: 每页记录数，默认20
+        in: query
+        maximum: 500
+        minimum: 1
+        name: page_size
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -300,7 +300,7 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: 根据记录类型查询解析记录
+      summary: 按记录类型查询解析记录
       tags:
-        - records
+      - record-query
 swagger: "2.0"

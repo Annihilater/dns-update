@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "domains"
+                    "domain-management"
                 ],
                 "summary": "获取域名列表",
                 "responses": {
@@ -57,7 +57,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-management"
                 ],
                 "summary": "获取域名解析记录",
                 "parameters": [
@@ -98,7 +98,7 @@ const docTemplate = `{
         },
         "/domains/{domain}/records/id/{record_id}": {
             "get": {
-                "description": "根据记录ID查询域名解析记录",
+                "description": "根据记录ID查询单个域名解析记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -106,9 +106,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-query"
                 ],
-                "summary": "根据记录ID查询解析记录",
+                "summary": "按记录ID查询解析记录",
                 "parameters": [
                     {
                         "type": "string",
@@ -163,9 +163,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-query"
                 ],
-                "summary": "根据主机记录查询解析记录",
+                "summary": "按主机记录查询解析记录",
                 "parameters": [
                     {
                         "type": "string",
@@ -209,7 +209,7 @@ const docTemplate = `{
         },
         "/domains/{domain}/records/search": {
             "get": {
-                "description": "根据条件搜索域名解析记录",
+                "description": "根据多个条件搜索域名解析记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -217,7 +217,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-query"
                 ],
                 "summary": "搜索域名解析记录",
                 "parameters": [
@@ -296,9 +296,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-query"
                 ],
-                "summary": "根据状态查询解析记录",
+                "summary": "按记录状态查询解析记录",
                 "parameters": [
                     {
                         "type": "string",
@@ -358,9 +358,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "records"
+                    "record-query"
                 ],
-                "summary": "根据记录类型查询解析记录",
+                "summary": "按记录类型查询解析记录",
                 "parameters": [
                     {
                         "type": "string",

@@ -25,7 +25,7 @@ func NewDNSHandler(dnsService *service.DNSService) *DNSHandler {
 // ListDomains godoc
 // @Summary      获取域名列表
 // @Description  获取账户下所有的域名列表
-// @Tags         domains
+// @Tags         domain-management
 // @Accept       json
 // @Produce      json
 // @Success      200  {array}   service.Domain
@@ -44,7 +44,7 @@ func (h *DNSHandler) ListDomains(c *gin.Context) {
 // ListDomainRecords godoc
 // @Summary      获取域名解析记录
 // @Description  获取指定域名的所有解析记录
-// @Tags         records
+// @Tags         record-management
 // @Accept       json
 // @Produce      json
 // @Param        domain     path      string  true   "域名"
@@ -81,8 +81,8 @@ func (h *DNSHandler) ListDomainRecords(c *gin.Context) {
 
 // SearchDomainRecords godoc
 // @Summary      搜索域名解析记录
-// @Description  根据条件搜索域名解析记录
-// @Tags         records
+// @Description  根据多个条件搜索域名解析记录
+// @Tags         record-query
 // @Accept       json
 // @Produce      json
 // @Param        domain      path      string  true   "域名"
@@ -141,9 +141,9 @@ func (h *DNSHandler) SearchDomainRecords(c *gin.Context) {
 }
 
 // SearchDomainRecordsByRecordId godoc
-// @Summary      根据记录ID查询解析记录
-// @Description  根据记录ID查询域名解析记录
-// @Tags         records
+// @Summary      按记录ID查询解析记录
+// @Description  根据记录ID查询单个域名解析记录
+// @Tags         record-query
 // @Accept       json
 // @Produce      json
 // @Param        domain      path      string  true   "域名"
@@ -183,9 +183,9 @@ func (h *DNSHandler) SearchDomainRecordsByRecordId(c *gin.Context) {
 }
 
 // SearchDomainRecordsByRR godoc
-// @Summary      根据主机记录查询解析记录
+// @Summary      按主机记录查询解析记录
 // @Description  根据主机记录查询域名解析记录
-// @Tags         records
+// @Tags         record-query
 // @Accept       json
 // @Produce      json
 // @Param        domain   path      string  true   "域名"
@@ -224,9 +224,9 @@ func (h *DNSHandler) SearchDomainRecordsByRR(c *gin.Context) {
 }
 
 // SearchDomainRecordsByType godoc
-// @Summary      根据记录类型查询解析记录
+// @Summary      按记录类型查询解析记录
 // @Description  根据记录类型查询域名解析记录
-// @Tags         records
+// @Tags         record-query
 // @Accept       json
 // @Produce      json
 // @Param        domain     path      string  true   "域名"
@@ -270,9 +270,9 @@ func (h *DNSHandler) SearchDomainRecordsByType(c *gin.Context) {
 }
 
 // SearchDomainRecordsByStatus godoc
-// @Summary      根据状态查询解析记录
+// @Summary      按记录状态查询解析记录
 // @Description  查询指定域名下所有特定状态的解析记录
-// @Tags         records
+// @Tags         record-query
 // @Accept       json
 // @Produce      json
 // @Param        domain     path      string  true   "域名"
