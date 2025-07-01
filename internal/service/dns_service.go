@@ -38,7 +38,7 @@ type ListDomainRecordsOptions struct {
 
 // DefaultListDomainRecordsOptions 默认的获取域名解析记录选项
 var DefaultListDomainRecordsOptions = ListDomainRecordsOptions{
-	PageSize: 5000,
+	PageSize: 20,
 }
 
 // DNSService 提供 DNS 相关的服务
@@ -111,7 +111,7 @@ func (s *DNSService) ListDomainRecords(domainName string, opts *ListDomainRecord
 	for {
 		req := &dns.DescribeDomainRecordsRequest{
 			DomainName: tea.String(domainName),
-			PageSize:   tea.Int64(pageSize),
+			PageSize:   tea.Int64(20),
 			PageNumber: tea.Int64(pageNumber),
 		}
 
