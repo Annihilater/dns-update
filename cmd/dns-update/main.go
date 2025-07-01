@@ -67,6 +67,11 @@ func main() {
 	// 注册路由
 	r.GET("/api/domains", dnsHandler.ListDomains)
 	r.GET("/api/domains/:domain/records", dnsHandler.ListDomainRecords)
+	r.GET("/api/domains/:domain/records/search", dnsHandler.SearchDomainRecords)
+	r.GET("/api/domains/:domain/records/id/:record_id", dnsHandler.SearchDomainRecordsByRecordId)
+	r.GET("/api/domains/:domain/records/rr/:rr", dnsHandler.SearchDomainRecordsByRR)
+	r.GET("/api/domains/:domain/records/type/:type", dnsHandler.SearchDomainRecordsByType)
+	r.GET("/api/domains/:domain/records/status/:status", dnsHandler.SearchDomainRecordsByStatus)
 
 	// 获取服务端口
 	port := os.Getenv("PORT")
