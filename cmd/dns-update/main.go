@@ -6,6 +6,7 @@ import (
 
 	"dns-update/docs"
 	"dns-update/internal/handler"
+	"dns-update/internal/middleware"
 	"dns-update/internal/service"
 	"dns-update/pkg/logger"
 
@@ -57,6 +58,7 @@ func main() {
 	// 创建 Gin 路由
 	r := gin.New()
 	r.Use(gin.Recovery())
+	r.Use(middleware.RequestTimer())
 
 	// 初始化Swagger文档
 	docs.SwaggerInfo.BasePath = "/api"
