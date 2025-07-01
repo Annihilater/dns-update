@@ -2,10 +2,31 @@ package service
 
 import (
 	"github.com/alibabacloud-go/alidns-20150109/v2/client"
-	env "github.com/alibabacloud-go/darabonba-env/client"
+	dns "github.com/alibabacloud-go/alidns-20150109/v2/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	"github.com/alibabacloud-go/tea/tea"
 )
+
+// Domain 域名信息
+type Domain struct {
+	DomainName string `json:"domain_name"`
+	DomainId   string `json:"domain_id"`
+	PunyCode   string `json:"puny_code"`
+	AliDomain  bool   `json:"ali_domain"`
+}
+
+// DomainRecord DNS解析记录
+type DomainRecord struct {
+	RecordId string `json:"record_id"`
+	RR       string `json:"rr"`
+	Type     string `json:"type"`
+	Value    string `json:"value"`
+	Status   string `json:"status"`
+	Locked   bool   `json:"locked"`
+	Line     string `json:"line"`
+	Priority int64  `json:"priority"`
+	TTL      int64  `json:"ttl"`
+}
 
 // DNSService 提供 DNS 相关的服务
 type DNSService struct {
@@ -13,11 +34,11 @@ type DNSService struct {
 }
 
 // NewDNSService 创建新的 DNS 服务实例
-func NewDNSService(accessKeyId, accessKeySecret, regionId *string) (*DNSService, error) {
+func NewDNSService(accessKeyId, accessKeySecret *string) (*DNSService, error) {
 	config := &openapi.Config{
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
-		RegionId:        regionId,
+		RegionId:        tea.String("cn-hangzhou"),
 	}
 
 	dnsClient, err := client.NewClient(config)
@@ -30,56 +51,51 @@ func NewDNSService(accessKeyId, accessKeySecret, regionId *string) (*DNSService,
 	}, nil
 }
 
-// Run 运行 DNS 更新服务
-func Run(args []*string) error {
-	if len(args) < 8 {
-		return tea.NewSDKError(map[string]interface{}{
-			"message": "参数不足，需要提供：domainName, RR, recordType, value, recordId, groupName, groupId, regionId",
+// ListDomains 获取所有域名列表
+func (s *DNSService) ListDomains() ([]Domain, error) {
+	req := &dns.DescribeDomainsRequest{}
+	resp, err := s.client.DescribeDomains(req)
+	if err != nil {
+		return nil, err
+	}
+
+	domains := make([]Domain, 0)
+	for _, d := range resp.Body.Domains.Domain {
+		domains = append(domains, Domain{
+			DomainName: tea.StringValue(d.DomainName),
+			DomainId:   tea.StringValue(d.DomainId),
+			PunyCode:   tea.StringValue(d.PunyCode),
+			AliDomain:  tea.BoolValue(d.AliDomain),
 		})
 	}
 
-	regionId := args[7]
-	domainName := args[0]
-	RR := args[1]
-	recordType := args[2]
-	value := args[3]
-	recordId := args[4]
-	groupName := args[5]
-	groupId := args[6]
+	return domains, nil
+}
 
-	// 初始化服务
-	service, err := NewDNSService(
-		env.GetEnv(tea.String("ACCESS_KEY_ID")),
-		env.GetEnv(tea.String("ACCESS_KEY_SECRET")),
-		regionId,
-	)
+// ListDomainRecords 获取指定域名的解析记录
+func (s *DNSService) ListDomainRecords(domainName string) ([]DomainRecord, error) {
+	req := &dns.DescribeDomainRecordsRequest{
+		DomainName: tea.String(domainName),
+	}
+	resp, err := s.client.DescribeDomainRecords(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// 执行所有操作
-	operations := []func() error{
-		func() error { return service.DescribeDomains() },
-		func() error { return service.AddDomain(domainName) },
-		func() error { return service.DescribeDomainRecords(domainName) },
-		func() error { return service.DescribeRecordLogs(domainName) },
-		func() error { return service.DescribeDomainRecordByRecordId(recordId) },
-		func() error { return service.DescribeDomainInfo(domainName) },
-		func() error { return service.AddDomainRecord(domainName, RR, recordType, value) },
-		func() error { return service.UpdateDomainRecord(recordId, RR, recordType, value) },
-		func() error { return service.SetDomainRecordStatus(recordId, tea.String("ENABLE")) },
-		func() error { return service.DeleteDomainRecord(recordId) },
-		func() error { return service.DescribeDomainGroups() },
-		func() error { return service.AddDomainGroup(groupName) },
-		func() error { return service.UpdateDomainGroup(groupId, groupName) },
-		func() error { return service.DeleteDomainGroup(groupId) },
+	records := make([]DomainRecord, 0)
+	for _, r := range resp.Body.DomainRecords.Record {
+		records = append(records, DomainRecord{
+			RecordId: tea.StringValue(r.RecordId),
+			RR:       tea.StringValue(r.RR),
+			Type:     tea.StringValue(r.Type),
+			Value:    tea.StringValue(r.Value),
+			Status:   tea.StringValue(r.Status),
+			Locked:   tea.BoolValue(r.Locked),
+			Line:     tea.StringValue(r.Line),
+			Priority: tea.Int64Value(r.Priority),
+			TTL:      tea.Int64Value(r.TTL),
+		})
 	}
 
-	for _, op := range operations {
-		if err := op(); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return records, nil
 }
