@@ -36,9 +36,12 @@ func validateConfig(config *Config) error {
 	if config.Aliyun.AccessKeySecret == "" || config.Aliyun.AccessKeySecret == "${ACCESS_KEY_SECRET}" {
 		return fmt.Errorf("阿里云AccessKeySecret未配置")
 	}
+	if config.Aliyun.RegionId == "" || config.Aliyun.RegionId == "${REGION_ID}" {
+		return fmt.Errorf("阿里云RegionId未配置")
+	}
 
 	// 检查服务器端口配置
-	if config.Server.Port == "" {
+	if config.Server.Port == "" || config.Server.Port == "${PORT}" {
 		return fmt.Errorf("服务器端口未配置")
 	}
 	// 可以添加端口号格式验证，但由于端口可能来自环境变量，这里只做简单检查

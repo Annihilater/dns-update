@@ -63,13 +63,16 @@ type DNSService struct {
 }
 
 // NewDNSService 创建新的 DNS 服务实例
-func NewDNSService(accessKeyId, accessKeySecret *string) (*DNSService, error) {
+func NewDNSService(accessKeyId, accessKeySecret *string, regionId string) (*DNSService, error) {
 	log := logger.GetLogger()
-	log.Info("初始化 DNS 服务", zap.String("accessKeyId", *accessKeyId))
+	log.Info("初始化 DNS 服务",
+		zap.String("accessKeyId", *accessKeyId),
+		zap.String("regionId", regionId),
+	)
 	config := &openapi.Config{
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
-		RegionId:        tea.String("cn-hangzhou"),
+		RegionId:        tea.String(regionId),
 	}
 
 	dnsClient, err := client.NewClient(config)

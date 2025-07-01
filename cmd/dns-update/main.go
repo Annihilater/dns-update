@@ -39,6 +39,7 @@ func main() {
 	dnsService, err := service.NewDNSService(
 		tea.String(cfg.Aliyun.AccessKeyId),
 		tea.String(cfg.Aliyun.AccessKeySecret),
+		cfg.Aliyun.RegionId,
 	)
 	if err != nil {
 		log.Fatal("初始化DNS服务失败", zap.Error(err))
