@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"dns-update/docs"
 	"dns-update/internal/handler"
 	"dns-update/internal/service"
+	"dns-update/pkg/logger"
 
-	env "github.com/alibabacloud-go/darabonba-env/client"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 // @title        DNS Update API
@@ -22,13 +22,30 @@ import (
 // @BasePath     /api
 
 func main() {
+	// 初始化日志
+	logger.InitLogger()
+	defer logger.Log.Sync()
+	log := logger.GetLogger()
+
+	// 获取环境变量
+	accessKeyId := os.Getenv("ACCESS_KEY_ID")
+	accessKeySecret := os.Getenv("ACCESS_KEY_SECRET")
+
+	// 验证必要的环境变量
+	if accessKeyId == "" || accessKeySecret == "" {
+		log.Fatal("缺少必要的环境变量",
+			zap.String("ACCESS_KEY_ID", accessKeyId),
+			zap.String("ACCESS_KEY_SECRET", "***"),
+		)
+	}
+
 	// 初始化 DNS 服务
 	dnsService, err := service.NewDNSService(
-		env.GetEnv(tea.String("ACCESS_KEY_ID")),
-		env.GetEnv(tea.String("ACCESS_KEY_SECRET")),
+		tea.String(accessKeyId),
+		tea.String(accessKeySecret),
 	)
 	if err != nil {
-		log.Fatalf("Failed to initialize DNS service: %v", err)
+		log.Fatal("初始化DNS服务失败", zap.Error(err))
 	}
 
 	// 初始化处理器
@@ -56,12 +73,13 @@ func main() {
 	}
 
 	// 打印服务信息
-	fmt.Printf("\n📡 DNS Update Service is running:\n")
-	fmt.Printf("🌐 API Documentation: http://localhost:%s/swagger/index.html\n", port)
-	fmt.Printf("🚀 HTTP Server: http://localhost:%s\n\n", port)
+	log.Info("DNS Update Service is running",
+		zap.String("swagger_url", fmt.Sprintf("http://localhost:%s/swagger/index.html", port)),
+		zap.String("server_url", fmt.Sprintf("http://localhost:%s", port)),
+	)
 
 	// 启动服务器
 	if err := r.Run(":" + port); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		log.Fatal("启动服务失败", zap.Error(err))
 	}
 }
