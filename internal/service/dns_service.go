@@ -111,7 +111,7 @@ func (s *DNSService) ListDomainRecords(domainName string, opts *ListDomainRecord
 	for {
 		req := &dns.DescribeDomainRecordsRequest{
 			DomainName: tea.String(domainName),
-			PageSize:   tea.Int64(20),
+			PageSize:   tea.Int64(pageSize),
 			PageNumber: tea.Int64(pageNumber),
 		}
 

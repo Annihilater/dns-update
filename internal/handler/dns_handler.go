@@ -47,7 +47,7 @@ func (h *DNSHandler) ListDomains(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        domain     path      string  true   "域名"
-// @Param        page_size  query     integer false  "每页记录数，默认20"  minimum(1)  maximum(20)
+// @Param        page_size  query     integer false  "每页记录数，默认20"  minimum(1)  maximum(500)
 // @Success      200    {array}   service.DomainRecord
 // @Failure      500    {object}  string
 // @Router       /domains/{domain}/records [get]
@@ -62,8 +62,8 @@ func (h *DNSHandler) ListDomainRecords(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须是有效的整数"})
 			return
 		}
-		if pageSize < 1 || pageSize > 20 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须在1-20之间"})
+		if pageSize < 1 || pageSize > 500 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "page_size必须在1-500之间"})
 			return
 		}
 		opts.PageSize = pageSize
