@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"dns-update/docs"
 	"dns-update/internal/handler"
 	"dns-update/internal/middleware"
 	"dns-update/internal/service"
 	"dns-update/pkg/logger"
 
 	"github.com/alibabacloud-go/tea/tea"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
@@ -52,26 +48,11 @@ func main() {
 	// 初始化处理器
 	dnsHandler := handler.NewDNSHandler(dnsService)
 
-	// 设置生产模式
-	gin.SetMode(gin.ReleaseMode)
+	// 初始化路由
+	r := handler.InitRouter(dnsHandler)
 
-	// 创建 Gin 路由
-	r := gin.New()
-	r.Use(gin.Recovery())
+	// 添加中间件
 	r.Use(middleware.RequestTimer())
-
-	// 初始化Swagger文档
-	docs.SwaggerInfo.BasePath = "/api"
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// 注册路由
-	r.GET("/api/domains", dnsHandler.ListDomains)
-	r.GET("/api/domains/:domain/records", dnsHandler.ListDomainRecords)
-	r.GET("/api/domains/:domain/records/search", dnsHandler.SearchDomainRecords)
-	r.GET("/api/domains/:domain/records/id/:record_id", dnsHandler.SearchDomainRecordsByRecordId)
-	r.GET("/api/domains/:domain/records/rr/:rr", dnsHandler.SearchDomainRecordsByRR)
-	r.GET("/api/domains/:domain/records/type/:type", dnsHandler.SearchDomainRecordsByType)
-	r.GET("/api/domains/:domain/records/status/:status", dnsHandler.SearchDomainRecordsByStatus)
 
 	// 获取服务端口
 	port := os.Getenv("PORT")
