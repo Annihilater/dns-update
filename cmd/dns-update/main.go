@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 
+	"dns-update/internal/config"
 	"dns-update/internal/handler"
 	"dns-update/internal/middleware"
 	"dns-update/internal/service"
@@ -21,25 +21,24 @@ import (
 func main() {
 	// 初始化日志
 	logger.InitLogger()
-	defer logger.Log.Sync()
+	defer func(Log *zap.Logger) {
+		err := Log.Sync()
+		if err != nil {
+			logger.GetLogger().Error("日志同步失败", zap.Error(err))
+		}
+	}(logger.Log)
 	log := logger.GetLogger()
 
-	// 获取环境变量
-	accessKeyId := os.Getenv("ACCESS_KEY_ID")
-	accessKeySecret := os.Getenv("ACCESS_KEY_SECRET")
-
-	// 验证必要的环境变量
-	if accessKeyId == "" || accessKeySecret == "" {
-		log.Fatal("缺少必要的环境变量",
-			zap.String("ACCESS_KEY_ID", accessKeyId),
-			zap.String("ACCESS_KEY_SECRET", "***"),
-		)
+	// 加载配置
+	cfg, err := config.LoadConfig("")
+	if err != nil {
+		log.Fatal("加载配置失败", zap.Error(err))
 	}
 
 	// 初始化 DNS 服务
 	dnsService, err := service.NewDNSService(
-		tea.String(accessKeyId),
-		tea.String(accessKeySecret),
+		tea.String(cfg.Aliyun.AccessKeyId),
+		tea.String(cfg.Aliyun.AccessKeySecret),
 	)
 	if err != nil {
 		log.Fatal("初始化DNS服务失败", zap.Error(err))
@@ -54,20 +53,14 @@ func main() {
 	// 添加中间件
 	r.Use(middleware.RequestTimer())
 
-	// 获取服务端口
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	// 打印服务信息
 	log.Info("DNS Update Service is running",
-		zap.String("swagger_url", fmt.Sprintf("http://localhost:%s/swagger/index.html", port)),
-		zap.String("server_url", fmt.Sprintf("http://localhost:%s", port)),
+		zap.String("swagger_url", fmt.Sprintf("http://localhost:%s/swagger/index.html", cfg.Server.Port)),
+		zap.String("server_url", fmt.Sprintf("http://localhost:%s", cfg.Server.Port)),
 	)
 
 	// 启动服务器
-	if err := r.Run(":" + port); err != nil {
+	if err := r.Run(":" + cfg.Server.Port); err != nil {
 		log.Fatal("启动服务失败", zap.Error(err))
 	}
 }
