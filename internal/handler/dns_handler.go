@@ -195,6 +195,12 @@ func (h *DNSHandler) SearchDomainRecordsByRR(c *gin.Context) {
 		return
 	}
 
+	// 验证RR的格式
+	if len(rr) > 255 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "主机记录长度不能超过255个字符"})
+		return
+	}
+
 	opts := service.SearchDomainRecordsOptions{
 		DomainName: domain,
 		RR:         rr,

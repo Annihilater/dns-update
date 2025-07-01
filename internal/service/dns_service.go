@@ -205,45 +205,36 @@ func (s *DNSService) SearchDomainRecords(opts *SearchDomainRecordsOptions) ([]Do
 		zap.Int64("page_size", opts.PageSize),
 	)
 
-	var allRecords []DomainRecord
-	pageNumber := int64(1)
-	pageSize := opts.PageSize
-
-	for {
-		req := &dns.DescribeDomainRecordsRequest{
-			DomainName: tea.String(opts.DomainName),
-			PageSize:   tea.Int64(pageSize),
-			PageNumber: tea.Int64(pageNumber),
-			SearchMode: tea.String("ADVANCED"),
+	// 如果指定了RR（子域名），使用DescribeSubDomainRecords接口
+	if opts.RR != "" {
+		subDomain := opts.RR + "." + opts.DomainName
+		req := &dns.DescribeSubDomainRecordsRequest{
+			SubDomain: tea.String(subDomain),
+			PageSize:  tea.Int64(opts.PageSize),
+			Type:      tea.String(opts.Type),
 		}
 
-		// 根据条件设置查询参数
-		if opts.RR != "" {
-			req.RRKeyWord = tea.String(opts.RR)
-		}
-		if opts.Type != "" {
-			req.Type = tea.String(opts.Type)
-		}
-		if opts.Status != "" {
-			req.Status = tea.String(opts.Status)
-		}
-
-		resp, err := s.client.DescribeDomainRecords(req)
+		resp, err := s.client.DescribeSubDomainRecords(req)
 		if err != nil {
-			s.log.Error("查询域名解析记录失败",
-				zap.String("domain", opts.DomainName),
-				zap.Int64("page", pageNumber),
+			s.log.Error("查询子域名解析记录失败",
+				zap.String("sub_domain", subDomain),
 				zap.Error(err),
 			)
 			return nil, err
 		}
 
-		// 处理当前页的记录，如果指定了RecordId，只返回匹配的记录
+		var records []DomainRecord
 		for _, r := range resp.Body.DomainRecords.Record {
+			// 如果指定了RecordId，只返回匹配的记录
 			if opts.RecordId != "" && tea.StringValue(r.RecordId) != opts.RecordId {
 				continue
 			}
-			allRecords = append(allRecords, DomainRecord{
+			// 如果指定了Status，只返回匹配的记录
+			if opts.Status != "" && tea.StringValue(r.Status) != opts.Status {
+				continue
+			}
+
+			records = append(records, DomainRecord{
 				RecordId: tea.StringValue(r.RecordId),
 				RR:       tea.StringValue(r.RR),
 				Type:     tea.StringValue(r.Type),
@@ -256,27 +247,14 @@ func (s *DNSService) SearchDomainRecords(opts *SearchDomainRecordsOptions) ([]Do
 			})
 		}
 
-		// 检查是否还有下一页
-		totalCount := tea.Int64Value(resp.Body.TotalCount)
-		totalPages := (totalCount + pageSize - 1) / pageSize
-
-		s.log.Debug("查询域名解析记录分页信息",
-			zap.String("domain", opts.DomainName),
-			zap.Int64("current_page", pageNumber),
-			zap.Int64("total_pages", totalPages),
-			zap.Int("current_records", len(allRecords)),
-			zap.Int64("total_records", totalCount),
+		s.log.Info("查询子域名解析记录成功",
+			zap.String("sub_domain", subDomain),
+			zap.Int("count", len(records)),
 		)
-
-		if pageNumber >= totalPages {
-			break
-		}
-		pageNumber++
+		return records, nil
 	}
 
-	s.log.Info("查询域名解析记录成功",
-		zap.String("domain", opts.DomainName),
-		zap.Int("count", len(allRecords)),
-	)
-	return allRecords, nil
+	// 如果没有指定RR，返回空记录
+	s.log.Info("未指定子域名，返回空记录列表")
+	return []DomainRecord{}, nil
 }
