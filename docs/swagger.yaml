@@ -1,0 +1,89 @@
+basePath: /api
+definitions:
+  service.Domain:
+    properties:
+      ali_domain:
+        type: boolean
+      domain_id:
+        type: string
+      domain_name:
+        type: string
+      puny_code:
+        type: string
+    type: object
+  service.DomainRecord:
+    properties:
+      line:
+        type: string
+      locked:
+        type: boolean
+      priority:
+        type: integer
+      record_id:
+        type: string
+      rr:
+        type: string
+      status:
+        type: string
+      ttl:
+        type: integer
+      type:
+        type: string
+      value:
+        type: string
+    type: object
+info:
+  contact: { }
+  description: 阿里云DNS管理服务API
+  title: DNS Update API
+  version: "1.0"
+paths:
+  /domains:
+    get:
+      consumes:
+        - application/json
+      description: 获取账户下所有的域名列表
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.Domain'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: 获取域名列表
+      tags:
+        - domains
+  /domains/{domain}/records:
+    get:
+      consumes:
+        - application/json
+      description: 获取指定域名的所有解析记录
+      parameters:
+        - description: 域名
+          in: path
+          name: domain
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.DomainRecord'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: 获取域名解析记录
+      tags:
+        - records
+swagger: "2.0"

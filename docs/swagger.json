@@ -1,0 +1,136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "阿里云DNS管理服务API",
+    "title": "DNS Update API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "basePath": "/api",
+  "paths": {
+    "/domains": {
+      "get": {
+        "description": "获取账户下所有的域名列表",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "domains"
+        ],
+        "summary": "获取域名列表",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.Domain"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domain}/records": {
+      "get": {
+        "description": "获取指定域名的所有解析记录",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "records"
+        ],
+        "summary": "获取域名解析记录",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "域名",
+            "name": "domain",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/service.DomainRecord"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "service.Domain": {
+      "type": "object",
+      "properties": {
+        "ali_domain": {
+          "type": "boolean"
+        },
+        "domain_id": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "puny_code": {
+          "type": "string"
+        }
+      }
+    },
+    "service.DomainRecord": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "rr": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ttl": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
